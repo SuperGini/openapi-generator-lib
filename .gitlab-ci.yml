@@ -18,10 +18,10 @@ build-stage:
       value: "default-value"
   script:
     - chmod +x ./gradlew
-    - ./gradlew openApiGenerate -PopenApiFileName="$openApiFileName"
+    - ./gradlew build -PopenApiFileName="$openApiFileName"
   artifacts:
     paths:
-      - /build/libs/*.jar
+      - ./build/libs/*.jar
     expire_in: 2 days
 
 publish-stage:
