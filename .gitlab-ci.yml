@@ -1,17 +1,23 @@
-image: alpine/java:21.0.1
-
-include:
-  - 'variable-config.yml'
+image: alpine/java:21.0.1git
 
 stages:
   - build
   - publish
 
+#rules:
+#  # Allow manual pipeline runs via the GitLab UI.
+#  # This is where you provide your "keyboard input" via the form.
+#  - if: '$CI_PIPELINE_SOURCE == "web"'
+#    when: always
+
 build-stage:
   stage: build
+  variables:
+    openApiFileName:
+      value: "default-value"
   script:
     - chmod +x ./gradlew
-    - ./gradlew openApiGenerate -P$[[inputs.openApiFileName]="car-module-openapi"
+    - ./gradlew openApiGenerate -PopenApiFileName="$openApiFileName"
   artifacts:
     paths:
       - build/libs/*.jar
