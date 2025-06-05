@@ -55,7 +55,7 @@ publishing {
 }
 
 group = "com.gini"  // groupId of library
-version = "1.0.15"  //version of the library
+version = "1.0.16"  //version of the library
 
 java {
     toolchain {

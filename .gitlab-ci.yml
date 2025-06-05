@@ -21,7 +21,7 @@ build-stage:
     - ./gradlew openApiGenerate -PopenApiFileName="$openApiFileName"
   artifacts:
     paths:
-      - build/libs/*.jar
+      - /build/libs/*.jar
     expire_in: 2 days
 
 publish-stage:
