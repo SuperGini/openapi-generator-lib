@@ -1,4 +1,4 @@
-image: alpine/java:21.0.1git
+image: openjdk:21-slim-bookworm
 
 stages:
   - build
