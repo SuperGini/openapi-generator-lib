@@ -1,0 +1,5 @@
+spec:
+  inputs:
+    openApiFileName:
+      default: "surprize :D"
+      description: "this variable represents the file name of the openapi yaml file"
