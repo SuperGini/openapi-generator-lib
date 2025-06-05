@@ -95,7 +95,7 @@ openApiGenerate {
     outputDir.set("$rootDir/generated") // Output directory for the generated code.
     apiPackage.set("com.gini.${openApiFileName}.api") // Package for the generated API classes.
     modelPackage.set("com.gini.${openApiFileName}.model") // Package for the generated model classes.
-    verbose.set(true)
+//    verbose.set(true)
     globalProperties.set(
         mapOf(
             "apis" to "",   //generate only the interfaces for the controlers
