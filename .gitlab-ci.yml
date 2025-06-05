@@ -1,5 +1,11 @@
 image: alpine/java:21.0.1
 
+spec:
+  inputs:
+    openApiFileName:
+      default: "surprize :D"
+      description: "this variable represents the file name of the openapi yaml file"
+
 stages:
   - build
   - deploy
@@ -8,5 +14,5 @@ build-stage:
   stage: build
   script:
     - chmod +x ./gradlew
-    - ./gradlew openApiGenerate -PopenApiFileName="car-module-openapi"
+    - ./gradlew openApiGenerate -P$[[inputs.openApiFileName]="car-module-openapi"
 
