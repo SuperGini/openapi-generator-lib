@@ -31,5 +31,5 @@ publish-stage:
       value: default-value
   script:
     - chmod +x ./gradlew
-    - ./gradlew publish -Pci_JOB_TOKEN_OPEN_API="$ci_JOB_TOKEN_OPEN_API"
+    - ./gradlew publish -Pci_JOB_TOKEN_OPEN_API="$ci_JOB_TOKEN_OPEN_API" -PopenApiFileName="$openApiFileName"
 
