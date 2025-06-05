@@ -44,7 +44,8 @@ publishing {
             credentials(HttpHeaderCredentials::class) {
                 name = "Private-Token" //accepted values: Private-Token, Deploy-Token, Job-Token
                 value =
-                    findProperty("gitLabPrivateToken") as String? // the variable resides in $GRADLE_USER_HOME/gradle.properties
+//                    findProperty("gitLabPrivateToken") as String? // the variable resides in $GRADLE_USER_HOME/gradle.properties
+                project.findProperty("ci_JOB_TOKEN_OPEN_API") as String?
             }
             authentication {
                 create("header", HttpHeaderAuthentication::class)

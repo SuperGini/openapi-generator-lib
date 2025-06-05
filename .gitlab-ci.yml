@@ -1,18 +1,31 @@
-image: alpine/java:21.0.1
-
 spec:
   inputs:
     openApiFileName:
       default: "surprize :D"
       description: "this variable represents the file name of the openapi yaml file"
 
+image: alpine/java:21.0.1
+
 stages:
   - build
-  - deploy
+  - publish
 
 build-stage:
   stage: build
   script:
     - chmod +x ./gradlew
     - ./gradlew openApiGenerate -P$[[inputs.openApiFileName]="car-module-openapi"
+  artifacts:
+    paths:
+      - build/libs/*.jar
+    expire_in: 2 days
+
+publish-stage:
+  stage: publish
+  variables:
+    ci_JOB_TOKEN_OPEN_API:
+      value: default-value
+  script:
+    - chmod +x ./gradlew
+    - ./gradlew ./gradlew publish -Pci_JOB_TOKEN_OPEN_API="$ci_JOB_TOKEN_OPEN_API"
 
