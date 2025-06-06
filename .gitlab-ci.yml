@@ -48,10 +48,14 @@ publish-stage:
       value: default-value
     openApiFileName:
       value: "default-value"
+    OPENAPI_BASE_DIR:
+      value: "openapi/"
   script:
     - chmod +x ./gradlew
-    # Extract version from OpenAPI YAML file
-    - version=$(yq e '.info.version' "$openApiFileName".yaml)
+#    # Extract version from OpenAPI YAML file
+#    - version=$(yq e '.info.version' "$openApiFileName".yaml)
+    - FULL_OPENAPI_FILE_PATH="${OPENAPI_BASE_DIR}${openApiFileName}.yaml"
+    - version=$(yq e '.info.version' "$FULL_OPENAPI_FILE_PATH")
     # Replace version in build.gradle.kts
     - sed -i "s/version = \".*\"/version = \"$version\"/" build.gradle.kts
     - ./gradlew publish -Pci_JOB_TOKEN_OPEN_API="$ci_JOB_TOKEN_OPEN_API" -PopenApiFileName="$openApiFileName"
