@@ -22,7 +22,7 @@ before_script:
   - yq --version # This should show something like "yq (https://github.com/mikefarah/yq/) version 4.40.5"
 
 stages:
-  - build
+  - compile
   - publish
 
 workflow:
@@ -32,16 +32,16 @@ workflow:
     - if: '$CI_PIPELINE_SOURCE == "web"'
       when: always
 
-#build-stage:
-#  stage: build
-#  variables:
-#    openApiFileName:
-#      value: "default-value"
-#  script:
-#    - chmod +x ./gradlew
-#    - ./gradlew compileJava -PopenApiFileName="$openApiFileName"
+compile-validation-stage:
+  stage: compile
+  variables:
+    openApiFileName:
+      value: "default-value"
+  script:
+    - chmod +x ./gradlew
+    - ./gradlew compileJava -PopenApiFileName="$openApiFileName"
 
-publish-stage:
+publish-java-library-stage:
   stage: publish
   variables:
     ci_JOB_TOKEN_OPEN_API:
