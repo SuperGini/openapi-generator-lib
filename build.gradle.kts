@@ -3,6 +3,10 @@ import java.time.LocalDateTime
 // ./gradlew publish -PopenApiFileName="car-module-openapi" run this command for car-module-openapi.yaml file
 // ./gradlew openApiGenerate -PopenApiFileName="car-module-openapi" just to run the openApiGenerate with variables
 // how to deploy to gitlab: https://docs.gitlab.com/user/packages/maven_repository/?tab=%60gradle%60
+// https://www.youtube.com/watch?v=6y7vuNHoQC0
+
+group = "com.gini"  // groupId of library
+version = "1.0.0"  //version of the library
 
 plugins {
     id("org.springframework.boot") version "3.4.5"
@@ -53,9 +57,6 @@ publishing {
         }
     }
 }
-
-group = "com.gini"  // groupId of library
-version = "1.0.17"  //version of the library
 
 java {
     toolchain {
@@ -152,7 +153,6 @@ tasks.jar {
                         "os.version"
                     )
                 })",
-
                 )
         )
     }
