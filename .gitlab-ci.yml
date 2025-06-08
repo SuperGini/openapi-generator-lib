@@ -67,6 +67,9 @@ generate-typescript-library:
     openApiFileName:
       value: "default-value"
   script:
+    # --- Add these lines to install Java ---
+    - apt-get update -y # Update package lists
+    - apt-get install -y openjdk-21-jre-headless # Install a headless Java 21 JRE
     - npm install @openapitools/openapi-generator-cli -g
     - openapi-generator-cli generate -g typescript-angular -i ./openapi/${openApiFileName}.yaml -c config-options-typescript.yaml -o generated2
     - echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${ci_JOB_TOKEN_OPEN_API}">.npmrc
