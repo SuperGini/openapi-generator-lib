@@ -80,7 +80,7 @@ generate-typescript-library:
     # These commands are common for Debian-based systems
     - apt-get update -y
     - apt-get install -y curl
-    - curl -fsSL https://deb.nodesource.com/setup_22.16.0 | bash - # Using Node.js 20 LTS
+    - curl -fsSL https://deb.nodesource.com/setup_22.x | bash - # Using Node.js 20 LTS
     - apt-get install -y nodejs
     # Now that Node.js and npm are installed, proceed with your original script
     - npm install @openapitools/openapi-generator-cli -g
