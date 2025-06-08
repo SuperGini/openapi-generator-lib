@@ -62,14 +62,27 @@ workflow:
 
 generate-typescript-library:
   stage: generate-typescript
-  image: node:latest
+  image: openjdk:21-slim-bookworm
   variables:
     openApiFileName:
       value: "default-value"
+#  script:
+#    # --- Add these lines to install Java ---
+#    - apt-get update -y # Update package lists
+#    - apt-get install -y openjdk-21-jre-headless # Install a headless Java 21 JRE
+#    - npm install @openapitools/openapi-generator-cli -g
+#    - openapi-generator-cli generate -g typescript-angular -i ./openapi/${openApiFileName}.yaml -c config-options-typescript.yaml -o generated2
+#    - echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${ci_JOB_TOKEN_OPEN_API}">.npmrc
+#    - cd generated2
+#    - npm publish
   script:
-    # --- Add these lines to install Java ---
-    - apt-get update -y # Update package lists
-    - apt-get install -y openjdk-21-jre-headless # Install a headless Java 21 JRE
+    # Install Node.js and npm into the openjdk:21-slim-bookworm image
+    # These commands are common for Debian-based systems
+    - apt-get update -y
+    - apt-get install -y curl
+    - curl -fsSL https://deb.nodesource.com/setup_22.16.0 | bash - # Using Node.js 20 LTS
+    - apt-get install -y nodejs
+    # Now that Node.js and npm are installed, proceed with your original script
     - npm install @openapitools/openapi-generator-cli -g
     - openapi-generator-cli generate -g typescript-angular -i ./openapi/${openApiFileName}.yaml -c config-options-typescript.yaml -o generated2
     - echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${ci_JOB_TOKEN_OPEN_API}">.npmrc
