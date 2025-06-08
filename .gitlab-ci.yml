@@ -66,6 +66,8 @@ generate-typescript-library:
   variables:
     openApiFileName:
       value: "default-value"
+    ci_JOB_TOKEN_OPEN_API:
+      value: default-value
 #  script:
 #    # --- Add these lines to install Java ---
 #    - apt-get update -y # Update package lists
@@ -85,7 +87,7 @@ generate-typescript-library:
     # Now that Node.js and npm are installed, proceed with your original script
     - npm install @openapitools/openapi-generator-cli -g
     - openapi-generator-cli generate -g typescript-angular -i ./openapi/${openApiFileName}.yaml -c config-options-typescript.yaml -o generated2
-    - echo "@openapi-generator/openapi-generator:registry=https://gitlab.example.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
+    - echo "@openapi-generator:registry=https://gitlab.example.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
     - echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${ci_JOB_TOKEN_OPEN_API}" >> .npmrc
     - echo "--- Contents of .npmrc ---"
     - cat .npmrc
