@@ -6,3 +6,6 @@ build
 gradle.properties
 generated
 .idea
+generated2
+package-lock.json
+package.json

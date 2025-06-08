@@ -24,6 +24,8 @@ before_script:
 stages:
   - compile
   - publish
+  - publish-typescript
+  - generate-typescript
 
 workflow:
   rules:
@@ -32,28 +34,55 @@ workflow:
     - if: '$CI_PIPELINE_SOURCE == "web"'
       when: always
 
-compile-validation-stage:
-  stage: compile
-  variables:
-    openApiFileName:
-      value: "default-value"
-  script:
-    - chmod +x ./gradlew
-    - ./gradlew compileJava -PopenApiFileName="$openApiFileName"
+#compile-validation-stage:
+#  stage: compile
+#  variables:
+#    openApiFileName:
+#      value: "default-value"
+#  script:
+#    - chmod +x ./gradlew
+#    - ./gradlew compileJava -PopenApiFileName="$openApiFileName"
+#
+#publish-java-library-stage:
+#  stage: publish
+#  variables:
+#    ci_JOB_TOKEN_OPEN_API:
+#      value: default-value
+#    openApiFileName:
+#      value: "default-value"
+#    OPENAPI_BASE_DIR:
+#      value: "openapi/"
+#  script:
+#    - chmod +x ./gradlew
+#    - FULL_OPENAPI_FILE_PATH="${OPENAPI_BASE_DIR}${openApiFileName}.yaml"
+#    - version=$(yq e '.info.version' "$FULL_OPENAPI_FILE_PATH")                  # Extract version from OpenAPI YAML file
+#    - sed -i "s/version = \".*\"/version = \"$version\"/" build.gradle.kts       # Replace version in build.gradle.kts
+#    - ./gradlew publish -Pci_JOB_TOKEN_OPEN_API="$ci_JOB_TOKEN_OPEN_API" -PopenApiFileName="$openApiFileName"
 
-publish-java-library-stage:
-  stage: publish
+
+generate-typescript-library:
+  stage: generate-typescript
+  image: node:latest
   variables:
-    ci_JOB_TOKEN_OPEN_API:
-      value: default-value
     openApiFileName:
       value: "default-value"
-    OPENAPI_BASE_DIR:
-      value: "openapi/"
   script:
-    - chmod +x ./gradlew
-    - FULL_OPENAPI_FILE_PATH="${OPENAPI_BASE_DIR}${openApiFileName}.yaml"
-    - version=$(yq e '.info.version' "$FULL_OPENAPI_FILE_PATH")                  # Extract version from OpenAPI YAML file
-    - sed -i "s/version = \".*\"/version = \"$version\"/" build.gradle.kts       # Replace version in build.gradle.kts
-    - ./gradlew publish -Pci_JOB_TOKEN_OPEN_API="$ci_JOB_TOKEN_OPEN_API" -PopenApiFileName="$openApiFileName"
+    - npm install @openapitools/openapi-generator-cli -g
+    - openapi-generator-cli generate -g typescript-angular -i ./openapi/${openApiFileName}.yaml -c config-options-typescript.yaml -o generated2
+    - echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${ci_JOB_TOKEN_OPEN_API}">.npmrc
+    - cd generated2
+    - npm publish
+
+
+
+
+#https://www.youtube.com/watch?v=Yn0N8_Gfcyw ->HOW TO PUBLISH NPM PACKAGES
+#publish-typescript-library:
+#  stage: publish-typescript
+#  image: node:latest
+#  script:
+#    - echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${ci_JOB_TOKEN_OPEN_API}">.npmrc
+#    - cd generated2
+#    - npm publish
+
 
