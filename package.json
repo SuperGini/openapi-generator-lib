@@ -1,0 +1,19 @@
+{
+  "name": "@openapi-generator/openapi-generator",
+  "version": "1.0.0",
+  "files": [
+    "generated2/"
+  ],
+  "publishConfig": {
+    "@openapi-generator:registry": "https://gitlab.com/api/v4/projects/70539492/packages/npm"
+  },
+
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
+
