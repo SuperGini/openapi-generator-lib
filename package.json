@@ -4,9 +4,6 @@
   "files": [
     "generated2/"
   ],
-  "publishConfig": {
-    "@openapi-generator:registry": "https://gitlab.example.com/api/v4/projects/70539492/packages/npm/"
-  },
 
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -157,3 +157,7 @@ tasks.bootJar {
     enabled = false // Disable the bootJar task as this is a library, not an executable application but a library
 }
 
+//  "publishConfig": {
+//    "@openapi-generator:registry": "https://gitlab.example.com/api/v4/projects/70539492/packages/npm/"
+//  },
+

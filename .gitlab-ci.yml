@@ -85,7 +85,11 @@ generate-typescript-library:
     # Now that Node.js and npm are installed, proceed with your original script
     - npm install @openapitools/openapi-generator-cli -g
     - openapi-generator-cli generate -g typescript-angular -i ./openapi/${openApiFileName}.yaml -c config-options-typescript.yaml -o generated2
-    - echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${ci_JOB_TOKEN_OPEN_API}">.npmrc
+    - echo "@openapi-generator:registry=https://gitlab.example.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
+    - echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${ci_JOB_TOKEN_OPEN_API}" >> .npmrc
+    - echo "--- Contents of .npmrc ---"
+    - cat .npmrc
+    - echo "--------------------------"
     - npm publish
 
 
