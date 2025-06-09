@@ -49,8 +49,8 @@ generate-java-typescript-files-stage:
 publish-java-library-stage:
   stage: publish-job
   variables:
-    ci_JOB_TOKEN_OPEN_API:
-      value: default-value
+#    ci_JOB_TOKEN_OPEN_API:
+#      value: default-value
     openApiFileName:
       value: "default-value"
     OPENAPI_BASE_DIR:
@@ -60,7 +60,7 @@ publish-java-library-stage:
     - FULL_OPENAPI_FILE_PATH="${OPENAPI_BASE_DIR}${openApiFileName}.yaml"
     - version=$(yq e '.info.version' "$FULL_OPENAPI_FILE_PATH")                  # Extract version from OpenAPI YAML file
     - sed -i "s/version = \".*\"/version = \"$version\"/" build.gradle.kts       # Replace version in build.gradle.kts
-    - ./gradlew publish -Pci_JOB_TOKEN_OPEN_API="$ci_JOB_TOKEN_OPEN_API" -PopenApiFileName="$openApiFileName"
+    - ./gradlew publish -PCI_JOB_TOKEN="$CI_JOB_TOKEN"
 
 publish-typescript-library-stage:
   stage: publish-job
@@ -72,12 +72,12 @@ publish-typescript-library-stage:
     # Use | to indicate a literal block scalar for the script commands
     |
     # Extract version from OpenAPI YAML file
-    VERSION=$(yq e '.info.version' ./openapi/${openApiFileName}.yaml)
+    VERSION=$(yq e '.info.version' ./openapi/${openApiFileName}.yaml)                                                              # extract the version from the openapi.yaml file
     # Replace 'test-library' in the name field with openApiFileName
-    sed -i "s/\"name\": \"@openapi-generator\/test-library\"/\"name\": \"@openapi-generator\/${openApiFileName}\"/g" package.json
+    sed -i "s/\"name\": \"@openapi-generator\/test-library\"/\"name\": \"@openapi-generator\/${openApiFileName}\"/g" package.json  # replace test-library with the filename
     # Replace version in package.json
-    sed -i "s/\"version\": \".*\"/\"version\": \"${VERSION}\"/g" package.json
-    echo "@openapi-generator:registry=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
+    sed -i "s/\"version\": \".*\"/\"version\": \"${VERSION}\"/g" package.json                                                      # add opeapi.yaml version to package.json
+    echo "@openapi-generator:registry=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc                 
     echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}" >> .npmrc
     echo "--- Contents of .npmrc ---"
     cat .npmrc

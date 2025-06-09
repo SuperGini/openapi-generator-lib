@@ -53,8 +53,8 @@ fun Project.generateOpenApiCode(taskName: String, fileGenerator: String) {
     }
 }
 
-generateOpenApiCode("javaSpring", springGenerator)
-generateOpenApiCode("typescriptAngular", angularGenerator)
+generateOpenApiCode("javaSpring", springGenerator)          //generates java files
+generateOpenApiCode("typescriptAngular", angularGenerator)  // generates typescripts files
 
 //GITLAB--------------------------
 publishing {
@@ -68,7 +68,7 @@ publishing {
             url = uri("https://gitlab.com/api/v4/projects/70539492/packages/maven")
             credentials(HttpHeaderCredentials::class) {
                 name = "Private-Token" //accepted values: Private-Token, Deploy-Token, Job-Token
-                value = project.findProperty("ci_JOB_TOKEN_OPEN_API") as String?
+                value = project.findProperty("CI_JOB_TOKEN") as String?
             }
             authentication {
                 create("header", HttpHeaderAuthentication::class)
@@ -84,7 +84,7 @@ java {
 }
 
 repositories {
-    mavenCentral()
+    mavenCentral() //we need this for the dependencies block
 }
 
 
@@ -133,5 +133,6 @@ sourceSets {
 
 tasks.bootJar {
     enabled = false // Disable the bootJar task as this is a library, not an executable application but a library
+                    // if we don't disable the bootJar it will fail because we don't have the main class
 }
 
