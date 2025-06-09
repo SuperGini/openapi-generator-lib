@@ -5,7 +5,7 @@ info:
     POC test to see how to build a modulith app
   contact:
     email: tes@email.com
-  version: 1.0.25
+  version: 1.0.26
 servers:
   - url: https://localhost:8080/POC
 tags:
