@@ -48,6 +48,29 @@ openApiGenerate {
     )
 }
 
+fun Project.generateOpenApiCode(taskName: String,
+                            inputSpecx: String,
+                            apiPackage: String,
+                            modelPackage: String,
+                            configOptions: Map<String, String> = emptyMap(),
+                            globalOptions: Map<String, String> = emptyMap(),
+                            props: Map<String, String> = emptyMap()
+) {
+
+    tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>(taskName) {
+        generatorName.set("spring")
+        inputSpec.set(inputSpecx)
+//        outputDir.set(layout.buildDirectory.dir("generated").get().asFile.absolutePath)
+        outputDir.set(project.projectDir.resolve("src/main/java").absolutePath)
+        this.apiPackage.set(apiPackage)
+        this.modelPackage.set(modelPackage)
+//        verbose.set(true)
+        this.configOptions.set(configOptions)
+        this.globalProperties.set(globalOptions)
+        this.additionalProperties.set(props)
+    }
+}
+
 //GITHUB --------------------
 //publishing {
 //    repositories {

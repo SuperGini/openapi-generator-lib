@@ -1,6 +1,6 @@
 {
-  "name": "@openapi-generator/openapi-generator",
-  "version": "2.0.0",
+  "name": "test-library",
+  "version": "2.0.1",
   "files": [
     "generated2/"
   ],
