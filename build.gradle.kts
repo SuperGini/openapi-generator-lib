@@ -61,6 +61,7 @@ publishing {
     publications {
         create<MavenPublication>("library") {
             from(components["java"])
+            artifactId = openApiFileName
         }
     }
     repositories {
