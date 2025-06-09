@@ -60,7 +60,7 @@ publish-java-library-stage:
     - FULL_OPENAPI_FILE_PATH="${OPENAPI_BASE_DIR}${openApiFileName}.yaml"
     - version=$(yq e '.info.version' "$FULL_OPENAPI_FILE_PATH")                  # Extract version from OpenAPI YAML file
     - sed -i "s/version = \".*\"/version = \"$version\"/" build.gradle.kts       # Replace version in build.gradle.kts
-    - ./gradlew publish -PCI_JOB_TOKEN="$CI_JOB_TOKEN"
+    - ./gradlew publish -PCI_JOB_TOKEN="${CI_JOB_TOKEN}"
 
 publish-typescript-library-stage:
   stage: publish-job
