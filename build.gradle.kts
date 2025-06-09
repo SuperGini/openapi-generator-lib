@@ -139,7 +139,7 @@ dependencies {
 
 
 tasks.jar {
-    archiveClassifier.set("generated")                  //adds a classifier when generating the library. If this code is commented the default value will be -> plain This value can be anything i chose -> generated
+    archiveClassifier.set("javagenerated")                  //adds a classifier when generating the library. If this code is commented the default value will be -> plain This value can be anything i chose -> generated
     manifest { // to publish some information in the META-iNF file of the library. Is optional and you can delete it if you want
         attributes(
             mapOf(

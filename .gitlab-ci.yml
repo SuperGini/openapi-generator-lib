@@ -42,6 +42,11 @@ generate-java-typescript-files:
   script:
     - chmod +x ./gradlew
     - ./gradlew javaSpring typescriptAngular -PopenApiFileName="$openApiFileName"
+  artifacts:
+    paths:
+      - javagenerated/
+      - typescriptgenerated/
+    expire_in: 1 hour
 #
 publish-java-library-stage:
   stage: publish
