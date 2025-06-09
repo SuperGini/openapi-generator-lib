@@ -6,6 +6,10 @@ image: openjdk:21-slim-bookworm
 #  # or
 #  - apt-get update && apt-get install -y yq # For Debian/Ubuntu-based images
 
+variables:
+  gitlab_deploy_token: "default"
+  openApiFileName: "default"
+  OPENAPI_BASE_DIR: "openapi/"
 
 before_script:
   # 1. Update apt package lists
@@ -48,28 +52,16 @@ generate-java-typescript-files-stage:
 #
 publish-java-library-stage:
   stage: publish-job
-  variables:
-#    ci_JOB_TOKEN_OPEN_API:
-#      value: default-value
-    CI_JOB_TOKEN:
-      value: "default"
-    openApiFileName:
-      value: "default-value"
-    OPENAPI_BASE_DIR:
-      value: "openapi/"
   script:
     - chmod +x ./gradlew
     - FULL_OPENAPI_FILE_PATH="${OPENAPI_BASE_DIR}${openApiFileName}.yaml"
     - version=$(yq e '.info.version' "$FULL_OPENAPI_FILE_PATH")                  # Extract version from OpenAPI YAML file
     - sed -i "s/version = \".*\"/version = \"$version\"/" build.gradle.kts       # Replace version in build.gradle.kts
-    - ./gradlew publish -PcI_JOB_TOKEN="${CI_JOB_TOKEN}"
+    - ./gradlew publish -Pgitlab_deploy_token="${gitlab_deploy_token}"
 
 publish-typescript-library-stage:
   stage: publish-job
   image: node:latest
-  variables:
-    openApiFileName:
-      value: "default-value"
   script:
     # Use | to indicate a literal block scalar for the script commands
     |
@@ -80,7 +72,7 @@ publish-typescript-library-stage:
     # Replace version in package.json
     sed -i "s/\"version\": \".*\"/\"version\": \"${VERSION}\"/g" package.json                                                      # add opeapi.yaml version to package.json
     echo "@openapi-generator:registry=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc                 
-    echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}" >> .npmrc
+    echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${gitlab_deploy_token}" >> .npmrc
     echo "--- Contents of .npmrc ---"
     cat .npmrc
     echo "--------------------------"
