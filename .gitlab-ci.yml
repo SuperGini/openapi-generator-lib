@@ -60,41 +60,41 @@ publish-java-library-stage:
     - ./gradlew publish -Pci_JOB_TOKEN_OPEN_API="$ci_JOB_TOKEN_OPEN_API" -PopenApiFileName="$openApiFileName"
 
 
-generate-typescript-library:
-  stage: generate-typescript
-  image: openjdk:21-slim-bookworm
-  variables:
-    openApiFileName:
-      value: "default-value"
-    ci_JOB_TOKEN_OPEN_API:
-      value: default-value
-  script:
-    # Use | to indicate a literal block scalar for the script commands
-    |
-    # Install Node.js and npm into the openjdk:21-slim-bookworm image
-    # These commands are common for Debian-based systems
-    apt-get update -y
-    apt-get install -y curl
-    curl -fsSL https://deb.nodesource.com/setup_22.x | bash - # Using Node.js 20 LTS
-    apt-get install -y nodejs
-    # Now that Node.js and npm are installed, proceed with your original script
-
-    # Extract version from OpenAPI YAML file
-    VERSION=$(yq e '.info.version' ./openapi/${openApiFileName}.yaml)
-
-    # Replace 'test-library' in the name field with openApiFileName
-    sed -i "s/\"name\": \"@openapi-generator\/test-library\"/\"name\": \"@openapi-generator\/${openApiFileName}\"/g" package.json
-    # Replace version in package.json
-    sed -i "s/\"version\": \".*\"/\"version\": \"${VERSION}\"/g" package.json
-
-    npm install @openapitools/openapi-generator-cli -g
-    openapi-generator-cli generate -g typescript-angular -i ./openapi/${openApiFileName}.yaml -c config-options-typescript.yaml -o generated2
-    echo "@openapi-generator:registry=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
-    echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}" >> .npmrc
-    echo "--- Contents of .npmrc ---"
-    cat .npmrc
-    echo "--------------------------"
-    npm publish
+#generate-typescript-library:
+#  stage: generate-typescript
+#  image: openjdk:21-slim-bookworm
+#  variables:
+#    openApiFileName:
+#      value: "default-value"
+#    ci_JOB_TOKEN_OPEN_API:
+#      value: default-value
+#  script:
+#    # Use | to indicate a literal block scalar for the script commands
+#    |
+#    # Install Node.js and npm into the openjdk:21-slim-bookworm image
+#    # These commands are common for Debian-based systems
+#    apt-get update -y
+#    apt-get install -y curl
+#    curl -fsSL https://deb.nodesource.com/setup_22.x | bash - # Using Node.js 20 LTS
+#    apt-get install -y nodejs
+#    # Now that Node.js and npm are installed, proceed with your original script
+#
+#    # Extract version from OpenAPI YAML file
+#    VERSION=$(yq e '.info.version' ./openapi/${openApiFileName}.yaml)
+#
+#    # Replace 'test-library' in the name field with openApiFileName
+#    sed -i "s/\"name\": \"@openapi-generator\/test-library\"/\"name\": \"@openapi-generator\/${openApiFileName}\"/g" package.json
+#    # Replace version in package.json
+#    sed -i "s/\"version\": \".*\"/\"version\": \"${VERSION}\"/g" package.json
+#
+#    npm install @openapitools/openapi-generator-cli -g
+#    openapi-generator-cli generate -g typescript-angular -i ./openapi/${openApiFileName}.yaml -c config-options-typescript.yaml -o generated2
+#    echo "@openapi-generator:registry=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
+#    echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}" >> .npmrc
+#    echo "--- Contents of .npmrc ---"
+#    cat .npmrc
+#    echo "--------------------------"
+#    npm publish
 
 
 
