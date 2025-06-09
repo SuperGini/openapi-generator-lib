@@ -68,7 +68,7 @@ publishing {
             url = uri("https://gitlab.com/api/v4/projects/70539492/packages/maven")
             credentials(HttpHeaderCredentials::class) {
                 name = "Deploy-Token" //accepted values: Private-Token, Deploy-Token, Job-Token
-                value = project.findProperty("cI_JOB_TOKEN") as String?
+                value = System.getenv("CI_JOB_TOKEN")
 
                 println("TOKEN_VALUE: $value +++++++++++++++++++++++++++++++++++++++++++++++++++++++")
             }
