@@ -1,5 +1,6 @@
 image: openjdk:21-slim-bookworm
 
+#https://www.youtube.com/watch?v=Yn0N8_Gfcyw ->HOW TO PUBLISH NPM PACKAGES
 #before_script:
 ##  - apk add --no-cache yq  # For Alpine-based images
 #  # or
@@ -12,7 +13,6 @@ before_script:
   # 2. Install 'wget' which is needed to download the yq binary
   - apt-get install -y wget
   # 3. DOWNLOAD AND INSTALL THE CORRECT (GO) YQ VERSION
-  #    This step is crucial to avoid the Python yq that causes your error.
   #    We are downloading it directly from Mike Farah's GitHub releases.
   - wget https://github.com/mikefarah/yq/releases/download/v4.40.5/yq_linux_amd64 -O /usr/local/bin/yq
   # 4. Make the downloaded yq binary executable
@@ -22,11 +22,8 @@ before_script:
   - yq --version # This should show something like "yq (https://github.com/mikefarah/yq/) version 4.40.5"
 
 stages:
-  - compile
-  - publish
-  - publish-typescript
-  - generate-typescript
-  - parallel-job
+  - generate-job
+  - publish-job
 
 workflow:
   rules:
@@ -35,8 +32,8 @@ workflow:
     - if: '$CI_PIPELINE_SOURCE == "web"'
       when: always
 
-generate-java-typescript-files:
-  stage: compile
+generate-java-typescript-files-stage:
+  stage: generate-job
   variables:
     openApiFileName:
       value: "default-value"
@@ -50,7 +47,7 @@ generate-java-typescript-files:
     expire_in: 1 hour
 #
 publish-java-library-stage:
-  stage: parallel-job
+  stage: publish-job
   variables:
     ci_JOB_TOKEN_OPEN_API:
       value: default-value
@@ -65,8 +62,8 @@ publish-java-library-stage:
     - sed -i "s/version = \".*\"/version = \"$version\"/" build.gradle.kts       # Replace version in build.gradle.kts
     - ./gradlew publish -Pci_JOB_TOKEN_OPEN_API="$ci_JOB_TOKEN_OPEN_API" -PopenApiFileName="$openApiFileName"
 
-generate-typescript-library:
-  stage: parallel-job
+publish-typescript-library-stage:
+  stage: publish-job
   image: node:latest
   variables:
     openApiFileName:
@@ -86,16 +83,3 @@ generate-typescript-library:
     cat .npmrc
     echo "--------------------------"
     npm publish
-
-
-
-#https://www.youtube.com/watch?v=Yn0N8_Gfcyw ->HOW TO PUBLISH NPM PACKAGES
-#publish-typescript-library:
-#  stage: publish-typescript
-#  image: node:latest
-#  script:
-#    - echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${ci_JOB_TOKEN_OPEN_API}">.npmrc
-#    - cd generated2
-#    - npm publish
-
-
