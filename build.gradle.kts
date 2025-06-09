@@ -13,82 +13,81 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     id("org.openapi.generator") version "7.13.0"            // used to generate the classes with openApiGenerate function
     id("java-library")                                      // we generate a java library
-    `maven-publish`                                    // instruct gradle that this is a library that needs to be pushed
+    `maven-publish`                                         // instruct gradle that this is a library that needs to be pushed
 }
+
+val angularGenerator: String = "typescript-angular"
+val springGenerator: String = "spring"
+
+val openApiFileName: String = project.findProperty("openApiFileName") as String?
+    ?: "default" // get th filename from the openApiFileName variable. This value will be passed when we run the gitlab ci/cd
+
+val openApiSpecPath: String = "$projectDir/openapi/$openApiFileName.yaml"             //this will get the openapi filename from the root project ->
 
 // configuration properties: https://openapi-generator.tech/docs/generators/spring/
-openApiGenerate {
-    //    verbose.set(true)
-    generatorName.set("spring")                             // Use the Spring generator.
-    inputSpec.set(openApiSpecPath)                          // Path to your OpenAPI specification file.
-    outputDir.set("$rootDir/generated")                     // Output directory for the generated code.
-    apiPackage.set("com.gini.$openApiFileName.api")       // Package for the generated API classes.
-    modelPackage.set("com.gini.$openApiFileName.model")   // Package for the generated model classes.
-    globalProperties.set(
-        mapOf(
-            "apis" to "",                                    //generate only the interfaces for the controllers
-            "models" to ""                                  //generate the models/classes that will be need in the controllers
-        )
-    )
-    configOptions.set(
-        mapOf(
-            "interfaceOnly" to "true",                      // Generate interfaces instead of classes for controllers.
-            "useSpringBoot3" to "true",                     // Ensure compatibility with Spring Boot 3. It will automatically set "useJakartaEe" to "true"
-            "useJakartaEe" to "true",                       // Use Jakarta EE
-            "dateLibrary" to "java8",
-            "useTags" to "true",                            //generate an interface for all controllers under that tag
-            "skipDefaultInterface" to "true",               //do not create default interface
-            "useResponseEntity" to "false",                 // don't use ResponseEntity
-//            "hideGenerationTimestamp" to "true",          //does not generate a date when the classes wer created
-//            "modelPackage" to "com.gini.model",           //where to generate the model classes
-//            "apiPackage" to "com.gini.api",               //where to create the controller interfaces
-//            "artifactId" to "com.gini.test.artifact",
-//            "groupId" to "com.gini.group",
-        )
-    )
-}
+//openApiGenerate {
+//    //    verbose.set(true)
+//    generatorName.set("spring")                             // Use the Spring generator.
+//    inputSpec.set(openApiSpecPath)                          // Path to your OpenAPI specification file.
+//    outputDir.set("$rootDir/generated")                     // Output directory for the generated code.
+//    apiPackage.set("com.gini.$openApiFileName.api")         // Package for the generated API classes.
+//    modelPackage.set("com.gini.$openApiFileName.model")     // Package for the generated model classes.
+//    globalProperties.set(
+//        mapOf(
+//            "apis" to "",                                    //generate only the interfaces for the controllers
+//            "models" to ""                                  //generate the models/classes that will be need in the controllers
+//        )
+//    )
+//    configOptions.set(
+//        mapOf(
+//            "interfaceOnly" to "true",                      // Generate interfaces instead of classes for controllers.
+//            "useSpringBoot3" to "true",                     // Ensure compatibility with Spring Boot 3. It will automatically set "useJakartaEe" to "true"
+//            "useJakartaEe" to "true",                       // Use Jakarta EE
+//            "dateLibrary" to "java8",
+//            "useTags" to "true",                            //generate an interface for all controllers under that tag
+//            "skipDefaultInterface" to "true",               //do not create default interface
+//            "useResponseEntity" to "false",                 // don't use ResponseEntity
+//        )
+//    )
+//}
 
-fun Project.generateOpenApiCode(taskName: String,
-                            inputSpecx: String,
-                            apiPackage: String,
-                            modelPackage: String,
-                            configOptions: Map<String, String> = emptyMap(),
-                            globalOptions: Map<String, String> = emptyMap(),
-                            props: Map<String, String> = emptyMap()
-) {
-
+fun Project.generateOpenApiCode(taskName: String, fileGenerator: String) {
     tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>(taskName) {
-        generatorName.set("spring")
-        inputSpec.set(inputSpecx)
-//        outputDir.set(layout.buildDirectory.dir("generated").get().asFile.absolutePath)
-        outputDir.set(project.projectDir.resolve("src/main/java").absolutePath)
-        this.apiPackage.set(apiPackage)
-        this.modelPackage.set(modelPackage)
-//        verbose.set(true)
-        this.configOptions.set(configOptions)
-        this.globalProperties.set(globalOptions)
-        this.additionalProperties.set(props)
+
+        this.generatorName.set(fileGenerator)
+        this.inputSpec.set(openApiSpecPath)
+
+        this.apiPackage.set("com.gini.$openApiFileName.api")
+        this.modelPackage.set("com.gini.$openApiFileName.model")
+        this.globalProperties.set(mapOf("apis" to "", "models" to "")) //generate only controllers/clients and models
+
+        if(springGenerator.equals(fileGenerator)) {
+            this.outputDir.set("$rootDir/javagenerated")
+            this.configOptions.set(
+                mapOf(
+                    "interfaceOnly" to "true",                      // Generate interfaces instead of classes for controllers.
+                    "useSpringBoot3" to "true",                     // Ensure compatibility with Spring Boot 3. It will automatically set "useJakartaEe" to "true"
+                    "useJakartaEe" to "true",                       // Use Jakarta EE
+                    "dateLibrary" to "java8",
+                    "useTags" to "true",                            //generate an interface for all controllers under that tag
+                    "skipDefaultInterface" to "true",               //do not create default interface
+                    "useResponseEntity" to "false",                 // don't use ResponseEntity
+                )
+            )
+        }
+
+        if(angularGenerator.equals(fileGenerator)) {
+            this.outputDir.set("$rootDir/typescriptgenerated")
+        }
+
+
     }
 }
 
-//GITHUB --------------------
-//publishing {
-//    repositories {
-//        maven {
-//            name = "GitHubPackages"
-//            url = uri("https://maven.pkg.github.com/SuperGini/openapi-generator-lib")
-//            credentials {
-//                username = project.findProperty("user") as String? ?: System.getenv("USERNAME")
-//                password = project.findProperty("token") as String? ?: System.getenv("TOKEN")
-//            }
-//        }
-//    }
-//    publications {
-//        register<MavenPublication>("gpr") {
-//            from(components["java"])
-//        }
-//    }
-//}
+generateOpenApiCode("javaSpring", springGenerator)
+generateOpenApiCode("typescriptAngular", angularGenerator)
+
+
 
 //GITLAB--------------------------
 publishing {
@@ -134,11 +133,10 @@ dependencies {
 }
 
 
-val openApiFileName: String = project.findProperty("openApiFileName") as String?
-    ?: "default" // get th filename from the openApiFileName variable. This value will be passed when we run the gitlab ci/cd
+
 
 // Construct the full path using the dynamic filename
-val openApiSpecPath: String = "$projectDir/openapi/$openApiFileName.yaml"             //this will get the openapi filename from the root project ->
+
 
 tasks.jar {
     archiveClassifier.set("generated")                  //adds a classifier when generating the library. If this code is commented the default value will be -> plain This value can be anything i chose -> generated
@@ -167,20 +165,16 @@ tasks.jar {
 sourceSets {
     main {
         java {
-            srcDirs("${rootDir}/generated/src/main/java") // Adjust path if needed -> need this to include the classes in the library
+            srcDirs("${rootDir}/javagenerated/src/main/java") // Adjust path if needed -> need this to include the classes in the library
         }
     }
 }
 
-tasks.named("compileJava") {
-    dependsOn("openApiGenerate")                // when run ./gradlew publish it will build the library but before that it will run the openApiGenerate function
-}
+//tasks.named("compileJava") {
+//    dependsOn("openApiGenerate")                // when run ./gradlew publish it will build the library but before that it will run the openApiGenerate function
+//}
 
 tasks.bootJar {
     enabled = false // Disable the bootJar task as this is a library, not an executable application but a library
 }
-
-//  "publishConfig": {
-//    "@openapi-generator:registry": "https://gitlab.example.com/api/v4/projects/70539492/packages/npm/"
-//  },
 

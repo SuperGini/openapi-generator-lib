@@ -34,30 +34,30 @@ workflow:
     - if: '$CI_PIPELINE_SOURCE == "web"'
       when: always
 
-#compile-validation-stage:
-#  stage: compile
-#  variables:
-#    openApiFileName:
-#      value: "default-value"
-#  script:
-#    - chmod +x ./gradlew
-#    - ./gradlew compileJava -PopenApiFileName="$openApiFileName"
+generate-java-typescript-files:
+  stage: compile
+  variables:
+    openApiFileName:
+      value: "default-value"
+  script:
+    - chmod +x ./gradlew
+    - ./gradlew javaSpring typescriptAngular -PopenApiFileName="$openApiFileName"
 #
-#publish-java-library-stage:
-#  stage: publish
-#  variables:
-#    ci_JOB_TOKEN_OPEN_API:
-#      value: default-value
-#    openApiFileName:
-#      value: "default-value"
-#    OPENAPI_BASE_DIR:
-#      value: "openapi/"
-#  script:
-#    - chmod +x ./gradlew
-#    - FULL_OPENAPI_FILE_PATH="${OPENAPI_BASE_DIR}${openApiFileName}.yaml"
-#    - version=$(yq e '.info.version' "$FULL_OPENAPI_FILE_PATH")                  # Extract version from OpenAPI YAML file
-#    - sed -i "s/version = \".*\"/version = \"$version\"/" build.gradle.kts       # Replace version in build.gradle.kts
-#    - ./gradlew publish -Pci_JOB_TOKEN_OPEN_API="$ci_JOB_TOKEN_OPEN_API" -PopenApiFileName="$openApiFileName"
+publish-java-library-stage:
+  stage: publish
+  variables:
+    ci_JOB_TOKEN_OPEN_API:
+      value: default-value
+    openApiFileName:
+      value: "default-value"
+    OPENAPI_BASE_DIR:
+      value: "openapi/"
+  script:
+    - chmod +x ./gradlew
+    - FULL_OPENAPI_FILE_PATH="${OPENAPI_BASE_DIR}${openApiFileName}.yaml"
+    - version=$(yq e '.info.version' "$FULL_OPENAPI_FILE_PATH")                  # Extract version from OpenAPI YAML file
+    - sed -i "s/version = \".*\"/version = \"$version\"/" build.gradle.kts       # Replace version in build.gradle.kts
+    - ./gradlew publish -Pci_JOB_TOKEN_OPEN_API="$ci_JOB_TOKEN_OPEN_API" -PopenApiFileName="$openApiFileName"
 
 
 generate-typescript-library:
@@ -68,36 +68,6 @@ generate-typescript-library:
       value: "default-value"
     ci_JOB_TOKEN_OPEN_API:
       value: default-value
-#  script:
-#    # --- Add these lines to install Java ---
-#    - apt-get update -y # Update package lists
-#    - apt-get install -y openjdk-21-jre-headless # Install a headless Java 21 JRE
-#    - npm install @openapitools/openapi-generator-cli -g
-#    - openapi-generator-cli generate -g typescript-angular -i ./openapi/${openApiFileName}.yaml -c config-options-typescript.yaml -o generated2
-#    - echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${ci_JOB_TOKEN_OPEN_API}">.npmrc
-#    - cd generated2
-#    - npm publish
-#  script:
-#    # Install Node.js and npm into the openjdk:21-slim-bookworm image
-#    # These commands are common for Debian-based systems4
-#    - apt-get update -y
-#    - apt-get install -y curl
-#    - curl -fsSL https://deb.nodesource.com/setup_22.x | bash - # Using Node.js 20 LTS
-#    - apt-get install -y nodejs
-#    # Now that Node.js and npm are installed, proceed with your original script
-#    - sed -i "s/\"name\": \"@openapi-generator\/test-library\"/\"name\": \"@openapi-generator\/${openApiFileName}\"/g" package.json
-#    - sed -i "s/\"version\": \".*\"/\"version\": \"${VERSION}\"/g" package.json
-#
-#
-#    - npm install @openapitools/openapi-generator-cli -g
-#    - openapi-generator-cli generate -g typescript-angular -i ./openapi/${openApiFileName}.yaml -c config-options-typescript.yaml -o generated2
-#    - echo "@openapi-generator:registry=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
-#    - echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}" >> .npmrc
-#    - echo "--- Contents of .npmrc ---"
-#    - cat .npmrc
-#    - echo "--------------------------"
-#    - npm publish
-
   script:
     # Use | to indicate a literal block scalar for the script commands
     |

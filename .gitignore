@@ -7,3 +7,5 @@ gradle.properties
 generated
 .idea
 generated2
+javagenerated
+typescriptgenerated
