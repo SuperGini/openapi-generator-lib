@@ -115,14 +115,10 @@ generate-typescript-library:
     |
     # Extract version from OpenAPI YAML file
     VERSION=$(yq e '.info.version' ./openapi/${openApiFileName}.yaml)
-
     # Replace 'test-library' in the name field with openApiFileName
     sed -i "s/\"name\": \"@openapi-generator\/test-library\"/\"name\": \"@openapi-generator\/${openApiFileName}\"/g" package.json
     # Replace version in package.json
     sed -i "s/\"version\": \".*\"/\"version\": \"${VERSION}\"/g" package.json
-
-#    npm install @openapitools/openapi-generator-cli -g
-#    openapi-generator-cli generate -g typescript-angular -i ./openapi/${openApiFileName}.yaml -c config-options-typescript.yaml -o generated2
     echo "@openapi-generator:registry=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
     echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}" >> .npmrc
     echo "--- Contents of .npmrc ---"
