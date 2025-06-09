@@ -51,6 +51,8 @@ publish-java-library-stage:
   variables:
 #    ci_JOB_TOKEN_OPEN_API:
 #      value: default-value
+    CI_JOB_TOKEN:
+      value: "default"
     openApiFileName:
       value: "default-value"
     OPENAPI_BASE_DIR:
