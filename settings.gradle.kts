@@ -12,6 +12,9 @@
 
 val dynamicRootName: String? = settings.providers.gradleProperty("openApiFileName").orNull
 
-rootProject.name = dynamicRootName ?: "openapi-generator" // this will be the name of the library - the artifactId
-include("generated")
+//rootProject.name = dynamicRootName ?: "openapi-generator" // this will be the name of the library - the artifactId
+//include("typescriptgenerated")
+rootProject.name="openapi-generator"
+
+
 

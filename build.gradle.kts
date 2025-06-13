@@ -24,16 +24,17 @@ val openApiSpecPath: String = "$rootDir/openapi/$openApiFileName.yaml"          
 
 // configuration properties: https://openapi-generator.tech/docs/generators/spring/
 fun Project.generateOpenApiCode(taskName: String, fileGenerator: String) {
-    tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>(taskName) {
+    this.tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>(taskName) {
 
         this.generatorName.set(fileGenerator)                           // generator name to generate the files
         this.inputSpec.set(openApiSpecPath)                            //path to openapi.yaml file
         this.apiPackage.set("com.gini.$openApiFileName.api")          //name if packages generated
         this.modelPackage.set("com.gini.$openApiFileName.model")      //name of packages generated
-        this.globalProperties.set(mapOf("apis" to "", "models" to "")) //generate only controllers/clients and models
+
 
         if(springGenerator.equals(fileGenerator)) {
             this.outputDir.set("$rootDir/javagenerated")            //output directory for the files generated
+            this.globalProperties.set(mapOf("apis" to "", "models" to "")) //generate only controllers/clients and models
             this.configOptions.set(
                 mapOf(
                     "interfaceOnly" to "true",                      // Generate interfaces instead of classes for controllers.
@@ -61,7 +62,7 @@ publishing {
     publications {
         create<MavenPublication>("library") {
             from(components["java"])
-            artifactId = openApiFileName
+            artifactId = openApiFileName                                         // artifactId
         }
     }
     repositories {
@@ -72,10 +73,6 @@ publishing {
             credentials(HttpHeaderCredentials::class) {
                 name = "Deploy-Token" //accepted values: Private-Token, Deploy-Token, Job-Token
                 value = findProperty("gitlab_deploy_token") as String?
-
-
-                println("TOKEN_VALUE: $value +++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-
             }
             authentication {
                 create("header", HttpHeaderAuthentication::class)
