@@ -22,6 +22,8 @@ val openApiFileName: String = project.findProperty("openApiFileName") as String?
     ?: "default" // get the filename from the openApiFileName variable. This value will be passed when we run the gitlab ci/cd
 val openApiSpecPath: String = "$rootDir/openapi/$openApiFileName.yaml"             //this will get the openapi filename from the root project ->
 
+
+
 // configuration properties: https://openapi-generator.tech/docs/generators/spring/
 fun Project.generateOpenApiCode(taskName: String, fileGenerator: String) {
     this.tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>(taskName) {
@@ -49,9 +51,13 @@ fun Project.generateOpenApiCode(taskName: String, fileGenerator: String) {
         }
 
         if(angularGenerator.equals(fileGenerator)) {
-            this.outputDir.set("$rootDir/typescriptgenerated")
-            this.apiPackage.set("com/gini/$openApiFileName/api")          //name if packages generated
-            this.modelPackage.set("com/gini/$openApiFileName/model")
+            this.outputDir.set("$rootDir/$openApiFileName")
+            this.apiPackage.set("/api")          //name if packages generated
+            this.modelPackage.set("/model")
+            this.configOptions.set(
+                mapOf(
+                    "npmName" to "@openapi-generator/$openApiFileName",
+            ))
         }
     }
 }

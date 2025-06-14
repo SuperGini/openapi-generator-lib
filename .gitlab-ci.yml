@@ -78,41 +78,77 @@ publish-java-library-stage:
 #    echo "--------------------------"
 #    npm publish
 
+#publish-typescript-library-stage:
+#  stage: publish-job
+#  image: node:latest
+#  script:
+#    # Use | to indicate a literal block scalar for the script commands
+#    |
+#    # --- 1. Generate OpenAPI client (assuming this step runs earlier or is implied here) ---
+#    # Example: If your generator command outputs to './typescriptgenerated'
+#    # openapi-generator-cli generate -i ./openapi/${openApiFileName}.yaml -g typescript-angular -o ./typescriptgenerated
+#
+#    # --- 2. Preparation (your existing steps for package.json modification) ---
+#    # Extract version from OpenAPI YAML file
+#    VERSION=$(yq e '.info.version' ./openapi/${openApiFileName}.yaml)
+#    # Replace 'test-library' in the name field with openApiFileName
+#    sed -i "s/\"name\": \"@openapi-generator\/test-library\"/\"name\": \"@openapi-generator\/${openApiFileName}\"/g" package.json
+#    # Replace version in package.json
+#    sed -i "s/\"version\": \".*\"/\"version\": \"${VERSION}\"/g" package.json
+#
+#    # --- 3. Install TypeScript and library dependencies ---
+#    # Ensure TypeScript is installed in the CI environment (globally or as a devDependency)
+#    npm install # Installs dependencies listed in package.json (e.g., if 'typescript' is there)
+#    npm install -g typescript # Fallback: ensures tsc command is available if not via npm install
+#
+#
+#    # --- 4. Build the TypeScript library ---
+#    echo "Building TypeScript library..."
+#    # Now, tsc will find and use tsconfig.build.json because it's in the root
+#    # You explicitly tell it to use the named config file.
+#    tsc --project tsconfig.build.json
+#
+#    # --- 5. Configure .npmrc and publish ---
+#    echo "@openapi-generator:registry=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
+#    echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${gitlab_deploy_token}" >> .npmrc
+#    echo "--- Contents of .npmrc ---"
+#    cat .npmrc
+#    echo "--------------------------"
+#
+#    npm publish
+
 publish-typescript-library-stage:
   stage: publish-job
   image: node:latest
+  variables:
+    # Define openApiFileName if it's not a global CI/CD variable
+    # openApiFileName: "car-module-openapi" # Example, adjust as needed
+    # Define the desired scoped package name prefix
+    NPM_SCOPE: "@openapi-generator"
   script:
-    # Use | to indicate a literal block scalar for the script commands
-    |
-    # --- 1. Generate OpenAPI client (assuming this step runs earlier or is implied here) ---
-    # Example: If your generator command outputs to './typescriptgenerated'
-    # openapi-generator-cli generate -i ./openapi/${openApiFileName}.yaml -g typescript-angular -o ./typescriptgenerated
+    # The '|' itself should be indented by 2 spaces relative to 'script:'
+    # All lines of the script content should be indented by 4 spaces (or more, consistently)
+    - |
+      # --- 0. Pre-requisite: Ensure OpenAPI client is generated ---
+      echo "OpenAPI client is assumed to be generated in './${openApiFileName}'."
 
-    # --- 2. Preparation (your existing steps for package.json modification) ---
-    # Extract version from OpenAPI YAML file
-    VERSION=$(yq e '.info.version' ./openapi/${openApiFileName}.yaml)
-    # Replace 'test-library' in the name field with openApiFileName
-    sed -i "s/\"name\": \"@openapi-generator\/test-library\"/\"name\": \"@openapi-generator\/${openApiFileName}\"/g" package.json
-    # Replace version in package.json
-    sed -i "s/\"version\": \".*\"/\"version\": \"${VERSION}\"/g" package.json
+      # --- 1. Navigate into the generated library directory ---
+      echo "Navigating to the generated library directory: ./${openApiFileName}"
+      cd "./${openApiFileName}"
+      # --- 3. Install Angular library dependencies ---
+      echo "Installing Angular library dependencies..."
+      npm install
 
-    # --- 3. Install TypeScript and library dependencies ---
-    # Ensure TypeScript is installed in the CI environment (globally or as a devDependency)
-    npm install # Installs dependencies listed in package.json (e.g., if 'typescript' is there)
-    npm install -g typescript # Fallback: ensures tsc command is available if not via npm install
+      # --- 4. Build the Angular library using ng-packagr ---
+      echo "Building Angular library with ng-packagr..."
+      npm run build
 
-
-    # --- 4. Build the TypeScript library ---
-    echo "Building TypeScript library..."
-    # Now, tsc will find and use tsconfig.build.json because it's in the root
-    # You explicitly tell it to use the named config file.
-    tsc --project tsconfig.build.json
-
-    # --- 5. Configure .npmrc and publish ---
-    echo "@openapi-generator:registry=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
-    echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${gitlab_deploy_token}" >> .npmrc
-    echo "--- Contents of .npmrc ---"
-    cat .npmrc
-    echo "--------------------------"
-
-    npm publish
+      # --- 5. Configure .npmrc for publishing to GitLab Package Registry ---
+      echo "Configuring .npmrc for publishing to GitLab Package Registry..."
+      echo "${NPM_SCOPE}:registry=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
+      echo "//gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${gitlab_deploy_token}" >> .npmrc
+      echo "--- Contents of .npmrc ---"
+      cat .npmrc
+      echo "--------------------------"
+      echo "Publishing TypeScript library..."
+      npm publish dist
