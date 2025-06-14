@@ -38,16 +38,13 @@ workflow:
 
 generate-java-typescript-files-stage:
   stage: generate-job
-  variables:
-    openApiFileName:
-      value: "default-value"
   script:
     - chmod +x ./gradlew
     - ./gradlew javaSpring typescriptAngular -PopenApiFileName="$openApiFileName"
   artifacts:
     paths:
       - javagenerated/
-      - typescriptgenerated/
+      - "${openApiFileName}/"
     expire_in: 1 hour
 #
 publish-java-library-stage:
@@ -120,11 +117,6 @@ publish-java-library-stage:
 publish-typescript-library-stage:
   stage: publish-job
   image: node:latest
-  variables:
-    # Define openApiFileName if it's not a global CI/CD variable
-    # openApiFileName: "car-module-openapi" # Example, adjust as needed
-    # Define the desired scoped package name prefix
-    NPM_SCOPE: "@openapi-generator"
   script:
     # The '|' itself should be indented by 2 spaces relative to 'script:'
     # All lines of the script content should be indented by 4 spaces (or more, consistently)
@@ -145,7 +137,7 @@ publish-typescript-library-stage:
 
       # --- 5. Configure .npmrc for publishing to GitLab Package Registry ---
       echo "Configuring .npmrc for publishing to GitLab Package Registry..."
-      echo "${NPM_SCOPE}:registry=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
+      echo "@openapi-generator:registry=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
       echo "//gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${gitlab_deploy_token}" >> .npmrc
       echo "--- Contents of .npmrc ---"
       cat .npmrc
