@@ -189,10 +189,9 @@ publish-typescript-library-stage:
     NPM_SCOPE: "@openapi-generator"
   script:
     - |
-
-      echo "--- Contents of source package.json AFTER SEDS (should have correct name & version) ---"
+      cd "./${openApiFileName}"
       cat package.json
-      echo "----------------------------------------------------"
+      echo "--------------------source package.json UP---|||||-----------------------------"
 
       # --- 3. Install Angular library dependencies ---
       echo "Installing Angular library dependencies..."
@@ -202,14 +201,12 @@ publish-typescript-library-stage:
       echo "Building Angular library with ng-packagr..."
       npm run build
 
-      # --- DEBUG: Check dist/package.json content AFTER ng-packagr build ---
-      echo "--- Contents of dist/package.json AFTER ng-packagr build (CRITICAL CHECK for 'name') ---"
       cat dist/package.json
-      echo "-----------------------------------------------------"
+      echo "--------------------dist/package.json UP |||||---------------------------------"
 
       # --- 5. Configure .npmrc for publishing to GitLab Package Registry ---
       echo "Configuring .npmrc for publishing to GitLab Package Registry..."
-      echo "${NPM_SCOPE}:registry=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
+      echo "@openapi-generator:registry=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
       echo "//gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${gitlab_deploy_token}" >> .npmrc
       echo "--- Contents of .npmrc ---"
       cat .npmrc
