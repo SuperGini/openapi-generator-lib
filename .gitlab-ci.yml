@@ -91,9 +91,15 @@ publish-typescript-library-stage:
   stage: publish-job
   image: node:latest
   variables:
-    NPM_SCOPE: "@openapi-generator" # Define the desired scoped package name prefix
+    NPM_SCOPE: "@openapi-generator"
   script:
     - |
+      # --- Install jq for JSON parsing ---
+      apt-get update -y
+      apt-get install -y jq
+      echo "jq installed successfully."
+      # --- End jq installation ---
+
       echo "--- Starting TypeScript Library Publish Stage ---"
       echo "Initial directory: $(pwd)"
       ls -l # List contents of the project root to see if '$openApiFileName/' exists
@@ -103,31 +109,23 @@ publish-typescript-library-stage:
 
       # --- 1. Navigate into the generated library directory ---
       echo "Navigating to the generated library directory: ./${openApiFileName}"
-      # Check if the directory actually exists before trying to cd into it
       if [ ! -d "./${openApiFileName}" ]; then
         echo "Error: Directory './${openApiFileName}' not found. Check previous stage artifacts."
-        exit 1 # Fail the job if the directory doesn't exist
+        exit 1
       fi
       cd "./${openApiFileName}"
       echo "Current directory after cd: $(pwd)"
       ls -l # List contents of the car-module-openapi/ directory
 
       # --- 2. Extract version from OpenAPI YAML and update package.json ---
-      # Path to OpenAPI spec is relative to the *original* project root, so ../
-      # Ensure yq is installed in this job's image if not globally
-      # If yq is not available here, you'll need to re-add its installation steps.
       VERSION=$(yq e '.info.version' ../openapi/${openApiFileName}.yaml)
       echo "Extracted version from OpenAPI spec: ${VERSION}"
 
-      # Update the version in the library's package.json (e.g., car-module-openapi/package.json)
       echo "Updating package.json version to: ${VERSION}"
       sed -i "s/\"version\": \".*\"/\"version\": \"${VERSION}\"/g" package.json
 
-      # Set the TARGET_NAME for the package, which includes the scope.
       TARGET_NAME="${NPM_SCOPE}/${openApiFileName}"
 
-      # Update the package name in the source package.json if it's not already correct.
-      # This addresses scenarios where the generator might initially set a non-scoped name.
       ORIGINAL_NAME_SOURCE=$(jq -r '.name' package.json)
       if [ "$ORIGINAL_NAME_SOURCE" != "$TARGET_NAME" ]; then
         echo "Source package.json name is '${ORIGINAL_NAME_SOURCE}', attempting to update to '${TARGET_NAME}'"
@@ -151,7 +149,6 @@ publish-typescript-library-stage:
 
       # --- DEBUG: Check dist/package.json content AFTER ng-packagr build ---
       echo "--- Contents of dist/package.json AFTER ng-packagr build (CRITICAL CHECK for 'name') ---"
-      # Verify if dist/package.json exists before trying to cat it
       if [ ! -f "dist/package.json" ]; then
         echo "Error: dist/package.json not found after build. ng-packagr build might have failed."
         exit 1
@@ -160,7 +157,6 @@ publish-typescript-library-stage:
       echo "-----------------------------------------------------"
 
       # --- CONDITIONAL FIX: Apply name fix to dist/package.json if ng-packagr generated 'dist' ---
-      # This is a robust fallback in case ng-packagr in CI behaves differently than locally.
       DIST_PACKAGE_NAME=$(jq -r '.name' dist/package.json)
       if [ "$DIST_PACKAGE_NAME" == "dist" ]; then
         echo "WARNING: dist/package.json name is 'dist', overriding to '${TARGET_NAME}' for publishing."
@@ -172,10 +168,8 @@ publish-typescript-library-stage:
         echo "dist/package.json name is already correct: '${DIST_PACKAGE_NAME}' (no fix applied)."
       fi
 
-
       # --- 5. Configure .npmrc for publishing to GitLab Package Registry ---
       echo "Configuring .npmrc for publishing to GitLab Package Registry..."
-      # Ensure the registry line correctly specifies the scope.
       echo "${NPM_SCOPE}:registry=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
       echo "//gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${gitlab_deploy_token}" >> .npmrc
       echo "--- Contents of .npmrc ---"
