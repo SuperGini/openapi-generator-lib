@@ -78,5 +78,5 @@ publish-typescript-library-stage:
 
       # --- 6. Publish the library from the current directory, specifying 'dist/' ---
       echo "Publishing TypeScript library from current directory, specifying 'dist/'..."
-      npm publish dist
+      npm publish "./dist"
       echo "--- TypeScript Library Publish Stage Finished ---"
