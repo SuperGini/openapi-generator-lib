@@ -59,21 +59,60 @@ publish-java-library-stage:
     - sed -i "s/version = \".*\"/version = \"$version\"/" build.gradle.kts       # Replace version in build.gradle.kts
     - ./gradlew publish -Pgitlab_deploy_token="${gitlab_deploy_token}" -PopenApiFileName="${openApiFileName}"
 
+#publish-typescript-library-stage:
+#  stage: publish-job
+#  image: node:latest
+#  script:
+#    # Use | to indicate a literal block scalar for the script commands
+#    |
+#    # Extract version from OpenAPI YAML file
+#    VERSION=$(yq e '.info.version' ./openapi/${openApiFileName}.yaml)                                                              # extract the version from the openapi.yaml file
+#    # Replace 'test-library' in the name field with openApiFileName
+#    sed -i "s/\"name\": \"@openapi-generator\/test-library\"/\"name\": \"@openapi-generator\/${openApiFileName}\"/g" package.json  # replace test-library with the filename
+#    # Replace version in package.json
+#    sed -i "s/\"version\": \".*\"/\"version\": \"${VERSION}\"/g" package.json                                                      # add opeapi.yaml version to package.json
+#    echo "@openapi-generator:registry=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
+#    echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${gitlab_deploy_token}" >> .npmrc
+#    echo "--- Contents of .npmrc ---"
+#    cat .npmrc
+#    echo "--------------------------"
+#    npm publish
+
 publish-typescript-library-stage:
   stage: publish-job
   image: node:latest
   script:
     # Use | to indicate a literal block scalar for the script commands
     |
+    # --- 1. Generate OpenAPI client (assuming this step runs earlier or is implied here) ---
+    # Example: If your generator command outputs to './typescriptgenerated'
+    # openapi-generator-cli generate -i ./openapi/${openApiFileName}.yaml -g typescript-angular -o ./typescriptgenerated
+
+    # --- 2. Preparation (your existing steps for package.json modification) ---
     # Extract version from OpenAPI YAML file
-    VERSION=$(yq e '.info.version' ./openapi/${openApiFileName}.yaml)                                                              # extract the version from the openapi.yaml file
+    VERSION=$(yq e '.info.version' ./openapi/${openApiFileName}.yaml)
     # Replace 'test-library' in the name field with openApiFileName
-    sed -i "s/\"name\": \"@openapi-generator\/test-library\"/\"name\": \"@openapi-generator\/${openApiFileName}\"/g" package.json  # replace test-library with the filename
+    sed -i "s/\"name\": \"@openapi-generator\/test-library\"/\"name\": \"@openapi-generator\/${openApiFileName}\"/g" package.json
     # Replace version in package.json
-    sed -i "s/\"version\": \".*\"/\"version\": \"${VERSION}\"/g" package.json                                                      # add opeapi.yaml version to package.json
-    echo "@openapi-generator:registry=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc                 
+    sed -i "s/\"version\": \".*\"/\"version\": \"${VERSION}\"/g" package.json
+
+    # --- 3. Install TypeScript and library dependencies ---
+    # Ensure TypeScript is installed in the CI environment (globally or as a devDependency)
+    npm install # Installs dependencies listed in package.json (e.g., if 'typescript' is there)
+    npm install -g typescript # Fallback: ensures tsc command is available if not via npm install
+
+
+    # --- 4. Build the TypeScript library ---
+    echo "Building TypeScript library..."
+    # Now, tsc will find and use tsconfig.build.json because it's in the root
+    # You explicitly tell it to use the named config file.
+    tsc --project tsconfig.build.json
+
+    # --- 5. Configure .npmrc and publish ---
+    echo "@openapi-generator:registry=https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/" > .npmrc
     echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${gitlab_deploy_token}" >> .npmrc
     echo "--- Contents of .npmrc ---"
     cat .npmrc
     echo "--------------------------"
+
     npm publish
