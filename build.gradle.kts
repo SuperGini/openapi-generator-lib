@@ -50,6 +50,8 @@ fun Project.generateOpenApiCode(taskName: String, fileGenerator: String) {
 
         if(angularGenerator.equals(fileGenerator)) {
             this.outputDir.set("$rootDir/typescriptgenerated")
+            this.apiPackage.set("com/gini/$openApiFileName/api")          //name if packages generated
+            this.modelPackage.set("com/gini/$openApiFileName/model")
         }
     }
 }
