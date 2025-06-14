@@ -6,7 +6,8 @@ import java.time.LocalDateTime
 // https://www.youtube.com/watch?v=6y7vuNHoQC0
 
 group = "com.gini"  // groupId of library
-version = "1.0.0"  //version of the library -> is replaced with the version from the openapi.yaml file when we generate/publish the library
+version =
+    "1.0.0"  //version of the library -> is replaced with the version from the openapi.yaml file when we generate/publish the library
 
 plugins {
     id("org.springframework.boot") version "3.4.5"
@@ -20,8 +21,8 @@ val angularGenerator: String = "typescript-angular"
 val springGenerator: String = "spring"
 val openApiFileName: String = project.findProperty("openApiFileName") as String?
     ?: "default" // get the filename from the openApiFileName variable. This value will be passed when we run the gitlab ci/cd
-val openApiSpecPath: String = "$rootDir/openapi/$openApiFileName.yaml"             //this will get the openapi filename from the root project ->
-
+val openApiSpecPath: String =
+    "$rootDir/openapi/$openApiFileName.yaml"             //this will get the openapi filename from the root project ->
 
 
 // configuration properties: https://openapi-generator.tech/docs/generators/spring/
@@ -34,9 +35,14 @@ fun Project.generateOpenApiCode(taskName: String, fileGenerator: String) {
         this.modelPackage.set("com.gini.$openApiFileName.model")      //name of packages generated
 
 
-        if(springGenerator.equals(fileGenerator)) {
+        if (springGenerator.equals(fileGenerator)) {
             this.outputDir.set("$rootDir/javagenerated")            //output directory for the files generated
-            this.globalProperties.set(mapOf("apis" to "", "models" to "")) //generate only controllers/clients and models
+            this.globalProperties.set(
+                mapOf(
+                    "apis" to "",
+                    "models" to ""
+                )
+            ) //generate only controllers/clients and models
             this.configOptions.set(
                 mapOf(
                     "interfaceOnly" to "true",                      // Generate interfaces instead of classes for controllers.
@@ -50,14 +56,15 @@ fun Project.generateOpenApiCode(taskName: String, fileGenerator: String) {
             )
         }
 
-        if(angularGenerator.equals(fileGenerator)) {
+        if (angularGenerator.equals(fileGenerator)) {
             this.outputDir.set("$rootDir/$openApiFileName")
-            this.apiPackage.set("/api")          //name if packages generated
+            this.apiPackage.set("/api")                                      //name if packages generated
             this.modelPackage.set("/model")
             this.configOptions.set(
                 mapOf(
                     "npmName" to "@openapi-generator/$openApiFileName",
-            ))
+                )
+            )
         }
     }
 }
@@ -130,7 +137,7 @@ tasks.jar {
                         "os.version"
                     )
                 })",
-                )
+            )
         )
     }
 }
@@ -145,6 +152,6 @@ sourceSets {
 
 tasks.bootJar {
     enabled = false // Disable the bootJar task as this is a library, not an executable application but a library
-                    // if we don't disable the bootJar it will fail because we don't have the main class
+    // if we don't disable the bootJar it will fail because we don't have the main class
 }
 
