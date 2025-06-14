@@ -5,9 +5,10 @@ info:
     POC test to see how to build a modulith app
   contact:
     email: tes@email.com
-  version: 1.0.34
+  version: 1.0.35
 servers:
   - url: http://localhost:8080/POC
+  - url: http://localhost:8080/POC2
 tags:
   - name: CAR
     description: car API used to store ino about cars
