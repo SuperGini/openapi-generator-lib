@@ -6,8 +6,7 @@ import java.time.LocalDateTime
 // https://www.youtube.com/watch?v=6y7vuNHoQC0
 
 group = "com.gini"  // groupId of library
-version =
-    "1.0.0"  //version of the library -> is replaced with the version from the openapi.yaml file when we generate/publish the library
+version = "1.0.0"  //version of the library -> is replaced with the version from the openapi.yaml file when we generate/publish the library
 
 plugins {
     id("org.springframework.boot") version "3.4.5"
