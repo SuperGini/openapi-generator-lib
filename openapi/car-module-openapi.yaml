@@ -520,6 +520,13 @@ components:
           format: int32
           description: how many items does the customer want to buy
           example: 5
+    Color:
+      type: string
+      enum:
+        - black
+        - red
+        - white
+        - GREEN
     Error:
       type: object
       required:
