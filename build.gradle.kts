@@ -17,8 +17,8 @@ import java.time.LocalDateTime
 
 
 group = "com.gini"  // groupId of library
-version =
-    "1.0.0"  //version of the library -> is replaced with the version from the openapi.yaml file when we generate/publish the library using .gitlab-ci.yaml file
+version = "1.0.0"
+    //version of the library -> is replaced with the version from the openapi.yaml file when we generate/publish the library using .gitlab-ci.yaml file
 
 plugins {
     id("org.springframework.boot") version "3.4.5"
