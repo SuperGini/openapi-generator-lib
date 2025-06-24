@@ -5,11 +5,6 @@
  * For more detailed information on multi-project builds, please refer to https://docs.gradle.org/8.13/userguide/multi_project_builds.html in the Gradle documentation.
  */
 
-//plugins {
-//    // Apply the foojay-resolver plugin to allow automatic download of JDKs
-//    id("org.gradle.toolchains.foojay-resolver-convention") version "0.9.0"
-//}
-
 val dynamicRootName: String? = settings.providers.gradleProperty("openApiFileName").orNull
 
 rootProject.name = dynamicRootName ?: "openapi-generator" // this will be the name of the library - the artifactId

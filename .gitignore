@@ -11,3 +11,5 @@ javagenerated
 typescriptgenerated
 car-module-openapi
 order-module.openapi
+node_modules
+package-lock.json

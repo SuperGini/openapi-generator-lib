@@ -13,11 +13,22 @@ import java.time.LocalDateTime
  *
  * how to build java library 1: https://www.youtube.com/watch?v=6y7vuNHoQC0
  * how to build java library 2: https://www.youtube.com/watch?v=tr5_OWgXDiw&t=653s
+ *
+ * asyncapi gradle plugin: https://github.com/sngular/scs-multiapi-plugin?tab=readme-ov-file#how-to-configure-the-build-file
+ *
+async command to generate java classes:
+asyncapi generate models java car-module-asyncapi.yml \
+--packageName=com.gini.asyncapi.model \
+--output=javagenerated/src/main/java/com/gini/asyncapi/model \
+--javaJackson --javaArrayType=List \
+--javaConstraints
+ *
+ *
  */
 
-
-group = "com.gini"  // groupId of library
-version = "1.0.0"
+// groupId of library -> must be different from the one in the project
+//group = "com.gini"
+//version = "2.0.0"
 //version of the library -> is replaced with the version from the openapi.yaml file when we generate/publish the library using .gitlab-ci.yaml file
 
 plugins {
@@ -26,11 +37,13 @@ plugins {
     id("org.openapi.generator") version "7.13.0"            // used to generate the classes with openApiGenerate function
     id("java-library")                                      // instruct gradle generate a java library
     `maven-publish`                                         // instruct gradle that this is a library that needs to be published
+
 }
 
 val ANGULAR_GENERATOR: String = "typescript-angular"
 val SPRING_GENERATOR: String = "spring"
 
+val version: String = project.findProperty("version") as String? ?: "defaultVersion"
 val openApiFileName: String = project.findProperty("openApiFileName") as String?
     ?: "default" // get the filename from the openApiFileName variable. This value will be passed when we run the gitlab ci/cd
 val openApiSpecPath: String =
@@ -38,8 +51,8 @@ val openApiSpecPath: String =
 
 fun Project.configureSpringGenerator(task: GenerateTask) {
     task.outputDir.set("$rootDir/javagenerated")                     //output directory for the files generated
-    task.apiPackage.set("com.gini.$openApiFileName.api")             //name if packages generated
-    task.modelPackage.set("com.gini.$openApiFileName.model")         //name of packages generated
+    task.apiPackage.set("org.gini.$openApiFileName.generated.api")             //name if packages generated
+    task.modelPackage.set("org.gini.$openApiFileName.generated.model")         //name of packages generated
     task.globalProperties.set(mapOf("apis" to "", "models" to ""))   //generate only controllers/clients and models
     task.configOptions.set(
         mapOf(
@@ -54,9 +67,10 @@ fun Project.configureSpringGenerator(task: GenerateTask) {
     )
 }
 
+//task to generate java files from openapi files
 fun Project.configureAngularGenerator(task: GenerateTask) {
-    task.outputDir.set("$rootDir/$openApiFileName")
-    task.apiPackage.set("/api")                                      //name of packages generated for apis
+    task.outputDir.set("$rootDir/$openApiFileName/generated")
+    task.apiPackage.set("/api")                                          //name of packages generated for apis
     task.modelPackage.set("/model")                                      //name of packages generated for models
     task.configOptions.set(
         mapOf(
@@ -70,6 +84,7 @@ fun Project.configureAngularGenerator(task: GenerateTask) {
     )
 }
 
+//task to generate typescript files from openapi files
 fun Project.generateOpenApiCode(taskName: String, fileGenerator: String) {
     this.tasks.register<GenerateTask>(taskName) {
         this.generatorName.set(fileGenerator)                           // generator name to generate the files
@@ -93,7 +108,9 @@ publishing {
     publications {
         create<MavenPublication>("library") {
             from(components["java"])
-            artifactId = openApiFileName                                         // artifactId for java library
+            artifactId = openApiFileName                                             // artifactId for java library
+            groupId = "com.gini"
+            version = version
         }
     }
     repositories {
@@ -129,6 +146,9 @@ dependencies {
     //need this dependencies for openapi generator
     implementation("io.swagger.core.v3:swagger-annotations-jakarta:2.2.30")
     implementation("org.openapitools:jackson-databind-nullable:0.2.6")
+
+    //need for asyncapi javax validation
+    implementation("javax.validation:validation-api:2.0.1.Final")
 
 }
 

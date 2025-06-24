@@ -1,0 +1,137 @@
+openapi: 3.0.0
+info:
+  title: Test POC for Modulith
+  description: |-
+    POC test to see how to build a modulith app
+  contact:
+    email: tes@email.com
+  version: 1.0.41
+servers:
+  - url: http://localhost:8080/POC
+  - url: http://localhost:8080/POC2
+tags:
+  - name: CAR
+    description: car API used to store ino about cars
+  - name: CUSTOMER
+    description: customer API used to store customers
+  - name: STORE
+    description: store API used to store parts
+  - name: ORDER
+    description: order API used to generate orders
+
+components:
+  schemas:
+    CarEvent:
+      required:
+        - vin
+        - name
+        - constructor
+      type: object
+      properties:
+        vin:
+          type: string
+          pattern: "^[0-9A-Za-z]{17}$"
+          example: WF0FG56DF5687W567
+          description: Max of 17 alfa-numeric character
+        name:
+          type: string
+          example: Focus
+          description: name of the car model
+        constructor:
+          $ref: "#/components/schemas/ConstructorEvent"
+    ConstructorEvent:
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+          pattern: '^[^<>()]{0,60}$'
+          example: Ford
+          description: Do not allow <> or () and the string can have a maximum of 60 characters represents the constructor of the car
+    CustomerEvent:
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+          example: John
+          description: represents the name of the customer
+    PartEvent:
+      required:
+        - name
+        - partNumber
+        - quantity
+      type: object
+      properties:
+        name:
+          type: string
+          example: front fender
+          description: the name of the part
+        partNumber:
+          type: string
+          example: '15-75-GF'
+          description: identification number of the part. This is unique for every part
+        quantity:
+          type: integer
+          format: int32
+          example: 10
+          default: 0
+    PartUpdateEvent:
+      required:
+        - partNumber
+        - quantity
+      type: object
+      properties:
+        partNumber:
+          type: string
+          description: identification number of the part. This is unique for every part
+          example: '15-75-GF'
+        quantity:
+          type: integer
+          format: int32
+          description: represents how many parts will be added to the store
+          example: 2
+    OrderEvent:
+      required:
+        - parts
+        - customerId
+        - vin
+      properties:
+        parts:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderPartEvent"
+        customerId:
+          type: integer
+          format: int64
+          description: unique identifier for the customer
+          example: 1234
+        vin:
+          type: string
+          pattern: "^[0-9A-Za-z]{17}$"
+          description: serial number of the car
+          example: WF0FG56DF5687W567
+    OrderPartEvent:
+      description: sent to A module
+      required:
+        - partNumber
+        - quantity
+      properties:
+        partNumber:
+          type: string
+          description:  unique identifier of the part
+          example: '15-75-GF'
+        quantity:
+          type: integer
+          format: int32
+          description: how many items does the customer want to buy
+          example: 5
+    Color:
+      type: string
+      enum:
+        - black
+        - red
+        - white
+        - GREEN
