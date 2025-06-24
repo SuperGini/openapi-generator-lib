@@ -26,24 +26,18 @@ asyncapi generate models java car-module-asyncapi.yml \
  *
  */
 
-// groupId of library -> must be different from the one in the project
-//group = "com.gini"
-//version = "2.0.0"
-//version of the library -> is replaced with the version from the openapi.yaml file when we generate/publish the library using .gitlab-ci.yaml file
-
 plugins {
     id("org.springframework.boot") version "3.4.5"
     id("io.spring.dependency-management") version "1.1.7"
     id("org.openapi.generator") version "7.13.0"            // used to generate the classes with openApiGenerate function
     id("java-library")                                      // instruct gradle generate a java library
     `maven-publish`                                         // instruct gradle that this is a library that needs to be published
-
 }
 
 val ANGULAR_GENERATOR: String = "typescript-angular"
 val SPRING_GENERATOR: String = "spring"
 
-val version: String = project.findProperty("version") as String? ?: "defaultVersion"
+val libraryVersion: String = project.findProperty("version") as String? ?: "defaultVersion"
 val openApiFileName: String = project.findProperty("openApiFileName") as String?
     ?: "default" // get the filename from the openApiFileName variable. This value will be passed when we run the gitlab ci/cd
 val openApiSpecPath: String =
@@ -69,7 +63,7 @@ fun Project.configureSpringGenerator(task: GenerateTask) {
 
 //task to generate java files from openapi files
 fun Project.configureAngularGenerator(task: GenerateTask) {
-    task.outputDir.set("$rootDir/$openApiFileName/generated")
+    task.outputDir.set("$rootDir/$openApiFileName")
     task.apiPackage.set("/api")                                          //name of packages generated for apis
     task.modelPackage.set("/model")                                      //name of packages generated for models
     task.configOptions.set(
@@ -110,7 +104,7 @@ publishing {
             from(components["java"])
             artifactId = openApiFileName                                             // artifactId for java library
             groupId = "com.gini"
-            version = version
+            version = libraryVersion
         }
     }
     repositories {

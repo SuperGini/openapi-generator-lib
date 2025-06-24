@@ -42,8 +42,8 @@ generate-java-typescript-files-stage:
     - ./gradlew javaSpring typescriptAngular -PopenApiFileName="$openApiFileName"
   artifacts:
     paths:
-      - javagenerated/
-      - "${openApiFileName}/"
+      - javagenerated/             #location where java files were generated
+      - "${openApiFileName}/"      #location where typescript files were generated
     expire_in: 1 hour
 #
 publish-java-library-stage:
@@ -51,10 +51,8 @@ publish-java-library-stage:
   script:
     - chmod +x ./gradlew
     - FULL_OPENAPI_FILE_PATH="./specs/openapi/${openApiFileName}.yaml"
-    - version=$(yq e '.info.version' "$FULL_OPENAPI_FILE_PATH")                  # Extract version from OpenAPI YAML file
-#    - sed -i "s/version = \".*\"/version = \"$version\"/" build.gradle.kts       # Replace version in build.gradle.kts
-    - cat build.gradle.kts
-    - ./gradlew publish -Pgitlab_deploy_token="${gitlab_deploy_token}" -PopenApiFileName="${openApiFileName}" -Pversion="${version}"
+    - libraryVersion=$(yq e '.info.version' "$FULL_OPENAPI_FILE_PATH")                  # Extract version from OpenAPI YAML file
+    - ./gradlew publish -Pgitlab_deploy_token="${gitlab_deploy_token}" -PopenApiFileName="${openApiFileName}" -Pversion="${libraryVersion}"
 
 publish-typescript-library-stage:
   stage: publish-job
