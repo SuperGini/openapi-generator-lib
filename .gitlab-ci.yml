@@ -50,7 +50,7 @@ publish-java-library-stage:
   stage: publish-job
   script:
     - chmod +x ./gradlew
-    - FULL_OPENAPI_FILE_PATH="./specs/openapi/${openApiFileName}.yaml"
+    - FULL_OPENAPI_FILE_PATH="./specs/${openApiFileName}.yaml"
     - libraryVersion=$(yq e '.info.version' "$FULL_OPENAPI_FILE_PATH")                  # Extract version from OpenAPI YAML file
     - ./gradlew publish -Pgitlab_deploy_token="${gitlab_deploy_token}" -PopenApiFileName="${openApiFileName}" -Pversion="${libraryVersion}"
 

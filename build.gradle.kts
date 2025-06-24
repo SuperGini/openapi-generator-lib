@@ -68,7 +68,7 @@ fun Project.configureAngularGenerator(task: GenerateTask) {
     task.modelPackage.set("/model")                                      //name of packages generated for models
     task.configOptions.set(
         mapOf(
-            "npmName" to "@openapi-generator/$openApiFileName",     //generates angular library with this name
+            "npmName" to "@openapi-generator/${openApiFileName.substringAfterLast("/")}",     //generates angular library with this name
             "ngVersion" to "19.0.0",                                // use angular 19.0.0
             "enumPropertyNaming" to "UPPERCASE",                    //generates all enums as uppercase
             "stringEnums" to "true",                                //generates enum and not constants like enums
@@ -102,7 +102,7 @@ publishing {
     publications {
         create<MavenPublication>("library") {
             from(components["java"])
-            artifactId = openApiFileName                                           // artifactId for java library
+            artifactId = openApiFileName.substringAfterLast("/")                                           // artifactId for java library
             groupId = "com.gini"
             version = libraryVersion
         }
