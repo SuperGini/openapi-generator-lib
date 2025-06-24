@@ -5,9 +5,9 @@
  * For more detailed information on multi-project builds, please refer to https://docs.gradle.org/8.13/userguide/multi_project_builds.html in the Gradle documentation.
  */
 
-val dynamicRootName: String? = settings.providers.gradleProperty("openApiFileName").orNull
+//val dynamicRootName: String? = settings.providers.gradleProperty("openApiFileName").orNull
 
-rootProject.name = dynamicRootName ?: "openapi-generator" // this will be the name of the library - the artifactId
+//rootProject.name = dynamicRootName ?: "openapi-generator" // this will be the name of the library - the artifactId
 //include("typescriptgenerated")
 //rootProject.name="openapi-generator"
 

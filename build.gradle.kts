@@ -41,7 +41,7 @@ val libraryVersion: String = project.findProperty("version") as String? ?: "defa
 val openApiFileName: String = project.findProperty("openApiFileName") as String?
     ?: "default" // get the filename from the openApiFileName variable. This value will be passed when we run the gitlab ci/cd
 val openApiSpecPath: String =
-    "$rootDir/specs/openapi/$openApiFileName.yaml"             //this will get the openapi filename from the root project ->
+    "$rootDir/specs/$openApiFileName.yaml"             //this will get the openapi filename from the root project ->
 
 fun Project.configureSpringGenerator(task: GenerateTask) {
     task.outputDir.set("$rootDir/javagenerated")                     //output directory for the files generated
@@ -102,7 +102,7 @@ publishing {
     publications {
         create<MavenPublication>("library") {
             from(components["java"])
-            artifactId = openApiFileName                                             // artifactId for java library
+            artifactId = openApiFileName                                           // artifactId for java library
             groupId = "com.gini"
             version = libraryVersion
         }
