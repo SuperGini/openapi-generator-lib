@@ -88,7 +88,7 @@ generate-java-asyncapi-file-stage:
   stage: generate-job
   image: node:latest
   script:
-    - asyncFileName=$(base "$openApiFileName")
+    - asyncFileName=$(basename "$openApiFileName")
     - npm install -g @asyncapi/cli # Install AsyncAPI CLI globally
     - asyncapi generate models java "$asyncFileName".yaml \
       --packageName=org.gini.car_asyncapi.models \
