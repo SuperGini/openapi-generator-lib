@@ -90,7 +90,7 @@ generate-java-asyncapi-file-stage:
   script:
     - asyncFileName=$(basename "$openApiFileName")
     - npm install -g @asyncapi/cli # Install AsyncAPI CLI globally
-    - asyncapi generate models java "./specs/$openApiFileName".yaml --packageName=org.gini.car_asyncapi.models --output=javagenerated/src/main/java/org/gini/car_asyncapi/models --javaJackson --javaArrayType=List --javaConstraints
+    - asyncapi generate models java "./specs/$openApiFileName".yml --packageName=org.gini.car_asyncapi.models --output=javagenerated/src/main/java/org/gini/car_asyncapi/models --javaJackson --javaArrayType=List --javaConstraints
   artifacts:
     paths:
       - javagenerated/
