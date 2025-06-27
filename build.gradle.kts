@@ -18,8 +18,8 @@ import java.time.LocalDateTime
  *
 async command to generate java classes:
 asyncapi generate models java car-module-asyncapi.yml \
---packageName=com.gini.asyncapi.model \
---output=javagenerated/src/main/java/com/gini/asyncapi/model \
+--packageName=org.gini.car_asyncapi.models \
+--output=javagenerated/src/main/java/org/gini/car_asyncapi/models \
 --javaJackson --javaArrayType=List \
 --javaConstraints
  *
@@ -102,7 +102,7 @@ publishing {
     publications {
         create<MavenPublication>("library") {
             from(components["java"])
-            artifactId = openApiFileName.substringAfterLast("/")                                           // artifactId for java library
+            artifactId = openApiFileName.substringAfterLast("/")       // artifactId for java library(openapi file name)
             groupId = "com.gini"
             version = libraryVersion
         }
@@ -148,7 +148,7 @@ dependencies {
 
 //this task is optional
 tasks.jar {
-    archiveClassifier.set("javagenerated")                  //adds a classifier when generating the library. If this code is commented the default value will be -> "plain". This value can be anything, I chose -> generated
+    archiveClassifier.set("javagenerated")                   //adds a classifier when generating the library. If this code is commented the default value will be -> "plain". This value can be anything, I chose -> generated
     manifest {                                               // to publish some information in the META-iNF file of the library. Is optional and you can deleted it if you want
         attributes(
             mapOf(
@@ -181,6 +181,6 @@ sourceSets {
 
 tasks.bootJar {
     enabled = false // Disable the bootJar task as this is a library, not an executable application but a library
-    // if we don't disable the bootJar it will fail because we don't have the main class
+    // if we don't disable the bootJar task, it will fail because we don't have the main class
 }
 
