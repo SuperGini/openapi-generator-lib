@@ -42,12 +42,12 @@ generate-java-typescript-files-stage:
     - ./gradlew javaSpring typescriptAngular -PopenApiFileName="$openApiFileName"
   artifacts:
     paths:
-      - javagenerated/             #location where java files were generated
-      - "${openApiFileName}/"      #location where typescript files were generated
+      - javagenerated/             #location where java files were generated -> this folder will be in the root directory of the project
+      - "${openApiFileName}/"      #location where typescript files were generated -> this folder will be in the root directory of the project
     expire_in: 1 hour
   rules:
-    - if: '$openApiFileName =~ /openapi/'
-#
+    - if: '$openApiFileName =~ /openapi/'  #run the job if the $openApiFileName contains the word openapi
+
 publish-java-library-stage:
   stage: publish-job
   script:
@@ -107,41 +107,3 @@ publish-java-asyncapi-library-stage:
     - ./gradlew publish -Pgitlab_deploy_token="${gitlab_deploy_token}" -PopenApiFileName="${openApiFileName}" -Pversion="${libraryVersion}"
   rules:
     - if: '$openApiFileName =~ /asyncapi/'
-
-
-
-
-
-#stages:
-#  - stage_a
-#  - stage_b
-#  # Add other stages you might have, e.g., build, test, deploy
-#
-## Job for Stage A (e.g., OpenAPI related tasks)
-#run_openapi_job:
-#  stage: stage_a
-#  script:
-#    - echo "Running OpenAPI-related tasks for $openApiFileName"
-#    # Add your specific commands for OpenAPI processing here,
-#    # e.g., chmod +x ./gradlew, yq commands, gradlew javaSpring, gradlew publish, etc.
-#    - chmod +x ./gradlew
-#    - FULL_OPENAPI_FILE_PATH="./specs/openapi/${openApiFileName}.yaml"
-#    - extracted_version=$(yq e '.info.version' "$FULL_OPENAPI_FILE_PATH")
-#    - ./gradlew publish -Pgitlab_deploy_token="${gitlab_deploy_token}" -PopenApiFileName="${openApiFileName}" -PoverrideVersion="${extracted_version}"
-#  rules:
-#    # This job will run ONLY if the openApiFileName variable contains "openapi"
-#    - if: '$openApiFileName =~ /openapi/'
-#
-## Job for Stage B (e.g., AsyncAPI related tasks)
-#run_asyncapi_job:
-#  stage: stage_b
-#  script:
-#    - echo "Running AsyncAPI-related tasks for $openApiFileName"
-#    # Add your specific commands for AsyncAPI processing here,
-#    # e.g., commands for asyncapi generator, separate publishing logic, etc.
-#    # Example:
-#    # - asyncapi generate models java $FULL_ASYNCAPI_FILE_PATH --packageName=com.gini.asyncapi.model ...
-#    # - ./gradlew publishAsyncapiLibrary -Pgitlab_deploy_token="${gitlab_deploy_token}" -PopenApiFileName="${openApiFileName}"
-#  rules:
-#    # This job will run ONLY if the openApiFileName variable contains "asyncapi"
-#    - if: '$openApiFileName =~ /asyncapi/'
