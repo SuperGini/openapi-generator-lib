@@ -9,7 +9,7 @@
 
 //rootProject.name = dynamicRootName ?: "openapi-generator" // this will be the name of the library - the artifactId
 //include("typescriptgenerated")
-//rootProject.name="openapi-generator"
+rootProject.name="openapi-generator"
 
 
 

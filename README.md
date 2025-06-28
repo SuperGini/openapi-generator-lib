@@ -32,7 +32,7 @@
 
 3. Generate typescript library:
     - publish typescript to gitlab: https://docs.gitlab.com/user/packages/npm_registry/
-    - the classes are generated using gradle in: generate-java-typescript-files-stage in the folder typescriptgenerated.
+    - the classes are generated using gradle in: generate-java-typescript-files-stage in the folder starting with the asyncapi file name.
       We save this folder as an artifact so we can have access to them in the publish-typescript-library-stage.
     - extract the version from the openapi.yaml file and set tit to version in package.json.
     - replace the name "name": "@openapi-generator/test-library", with   "name": "@openapi-generator/openApiFileName",
@@ -43,4 +43,7 @@
         echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}" >> .npmrc
     ```
 
+### Gitlab CI/CD schema for generating library
+<hr></hr> 
 
+![pipeline.png](pipeline.png)
