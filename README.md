@@ -46,4 +46,4 @@
 ### Gitlab CI/CD schema for generating library
 <hr></hr> 
 
-![pipeline.png](pipeline.png)
+![pipeline.png](pipeline.svg)
