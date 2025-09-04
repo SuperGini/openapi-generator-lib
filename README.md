@@ -1,6 +1,6 @@
 # Openapi Library Generator
 
-### The scope of this project is to generate java-spring and typescript-angular libraries from openapi.yml files to Gitlab
+### The scope of this project is to generate java-spring and typescript-angular libraries from openapi.yml and asyncapi.yaml files to Gitlab
 
 1. Initiate project:
     - generate a simple spring boot project and add te web dependency.
