@@ -97,14 +97,14 @@ fun Project.generateOpenApiCode(taskName: String, fileGenerator: String) {
 generateOpenApiCode("javaSpring", SPRING_GENERATOR)          //generates java files
 generateOpenApiCode("typescriptAngular", ANGULAR_GENERATOR)  // generates typescripts files
 
-//GITLAB--------------------------
+//GITLAB--------------------------  https://docs.gitlab.com/user/packages/maven_repository/?tab=%60gradle%60
 publishing {
     publications {
         create<MavenPublication>("library") {
             from(components["java"])
             artifactId = openApiFileName.substringAfterLast("/")       // artifactId for java library(openapi file name)
-            groupId = "com.gini"
-            version = libraryVersion
+            groupId = "com.gini"                                                //groupId
+            version = libraryVersion                                            // java library version
         }
     }
     repositories {

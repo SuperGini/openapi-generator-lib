@@ -106,4 +106,4 @@ publish-java-asyncapi-library-stage:
     - libraryVersion=$(yq e '.info.version' "$FULL_OPENAPI_FILE_PATH")                  # Extract version from OpenAPI YAML file
     - ./gradlew publish -Pgitlab_deploy_token="${gitlab_deploy_token}" -PopenApiFileName="${openApiFileName}" -Pversion="${libraryVersion}"
   rules:
-    - if: '$openApiFileName =~ /asyncapi/'
+    - if: '$openApiFileName =~ /asyncapi/'     #run the job if the $openApiFileName contains the word asyncapi
